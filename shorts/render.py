@@ -165,18 +165,44 @@ def render(edit_path: Path, out: Path | None = None, preview: bool = False) -> P
     fl.append(f"{vcur}{post}[vout]")
 
     # BGM (말소리에 맞춰 자동으로 줄어듦) + 쇼츠 음량(-14 LUFS)
+    from .music import sfx_path
+
+    # 효과음: clips[].sfx = [{at, name, vol, stop_bgm}]  (at = 장면 시작 기준 초)
+    sfx = []
+    for i, c in enumerate(clips):
+        for s in c.get("sfx") or []:
+            sfx.append((starts[i] + float(s.get("at", 0)), s))
+    stop_at = min([t for t, s in sfx if s.get("stop_bgm")], default=None)
+
+    nin = len(clips)
     bgm = edit.get("bgm")
     if bgm:
         bp = Path(bgm) if Path(bgm).is_absolute() else ROOT / bgm
         inputs += ["-stream_loop", "-1", "-i", str(bp)]
-        b = len(clips)
+        b, nin = nin, nin + 1
         vol = float(edit.get("bgm_volume", 0.25))
+        end = stop_at if stop_at is not None else total
+        fade = 0.25 if stop_at is not None else 1.5   # 효과음 직전엔 '뚝' 끊기
         fl.append(f"[{b}:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,"
-                  f"volume={vol},atrim=0:{total:.3f},afade=t=out:st={max(total - 1.5, 0):.3f}:d=1.5[bgm]")
+                  f"volume={vol},atrim=0:{end:.3f},afade=t=out:st={max(end - fade, 0):.3f}:d={fade},"
+                  f"apad,atrim=0:{total:.3f}[bgm]")
         fl.append(f"{acur}asplit[av][sc]")
         fl.append("[bgm][sc]sidechaincompress=threshold=0.03:ratio=6:attack=30:release=500[bgd]")
         fl.append("[av][bgd]amix=inputs=2:duration=first:normalize=0[am]")
         acur = "[am]"
+    if sfx:
+        labels = []
+        for k, (t, s) in enumerate(sfx):
+            p = sfx_path(str(s["name"]))
+            p = p if p.is_absolute() else ROOT / p
+            inputs += ["-i", str(p)]
+            ms = int(t * 1000)
+            fl.append(f"[{nin}:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,"
+                      f"volume={float(s.get('vol', 0.8))},adelay={ms}|{ms}[fx{k}]")
+            labels.append(f"[fx{k}]")
+            nin += 1
+        fl.append(f"{acur}{''.join(labels)}amix=inputs={len(labels) + 1}:duration=first:normalize=0[amx]")
+        acur = "[amx]"
     fl.append(f"{acur}loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000[aout]")
 
     cmd = ["ffmpeg", "-v", "error", "-stats", "-y", *inputs,

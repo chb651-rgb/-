@@ -23,7 +23,7 @@ EDIT_HELP = """\
 #  fit        : 가로 영상 처리  crop=꽉 채우게 자름 | blur=흐린 배경 위에 원본
 #  subtitles  : auto=음성 자동 자막 | off
 #  replace    : 잘못 인식된 자막 고치기 {틀린말: 맞는말}, 맞는말을 ""로 두면 그 자막 삭제
-#  bgm        : 배경음악 파일 경로 (말할 때 자동으로 작아짐), 없으면 null
+#  bgm        : 배경음악 파일 경로 (기본 제공: work/music/bgm_sneaky.wav) (말할 때 자동으로 작아짐), 없으면 null
 #  clips      : 순서대로 이어붙일 장면
 #    in/out     원본 영상의 시작/끝 초
 #    speed      0.5=슬로모션, 1.5=빨리감기
@@ -36,6 +36,9 @@ EDIT_HELP = """\
 #               style: pop(노란 큰 글씨, 강조) | sub(일반 자막) | top(상단 고정)
 #               (이모지는 폰트에 없어서 안 나와요)
 #    sub        이 장면에 음성 자동 자막 표시 여부
+#    sfx        효과음 [{at: 장면 시작 기준 초, name: 이름 또는 파일, vol: 0.8, stop_bgm: true}]
+#               name: sad_trombone(허무), suspense(긴장), sparkle(반짝), pop(뽁), whoosh(휙)
+#               stop_bgm: true 면 그 순간 배경음악이 뚝 끊김
 # ───────────────────────────────────────────────────────────
 """
 

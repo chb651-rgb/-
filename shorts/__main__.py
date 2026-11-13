@@ -5,6 +5,7 @@
   python -m shorts plan [--target 30]           # 편집안 work/<name>.yaml 자동 생성
   python -m shorts render work/shorts.yaml      # 최종 영상 work/output/*.mp4
   python -m shorts auto <드라이브 링크>         # 위 과정 한 번에
+  python -m shorts music                       # 저작권 없는 배경음악/효과음 만들기
   python -m shorts frames <영상> 12.5 30 ...    # 특정 시점 프레임 이미지 뽑기 (검토용)
 """
 from __future__ import annotations
@@ -41,6 +42,8 @@ def main() -> None:
     au.add_argument("--target", type=float, default=30); au.add_argument("--title", default="")
     au.add_argument("--model", default="large-v3-turbo")
 
+    sub.add_parser("music", help="배경음악/효과음 합성 -> work/music")
+
     fr = sub.add_parser("frames"); fr.add_argument("video", type=Path)
     fr.add_argument("times", nargs="+", type=float)
 
@@ -71,6 +74,9 @@ def main() -> None:
             fetch(args.urls)
         analyze(list_videos(INPUT), args.model)
         render(auto_plan(args.target, title=args.title))
+    elif args.cmd == "music":
+        from .music import build_all
+        build_all()
     elif args.cmd == "frames":
         d = ANALYSIS / args.video.stem / "frames"
         d.mkdir(parents=True, exist_ok=True)
