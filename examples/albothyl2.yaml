@@ -31,6 +31,7 @@ replace:
   하아: ''
   찹: ''
   아: ''
+  뜨거워: 느므아파
 bgm: work/music/bgm_sneaky.wav
 bgm_volume: 0.22
 clips:
@@ -87,19 +88,19 @@ clips:
     vol: 0.4
 - src: work/input/albothyl2/20261113_230519.mp4
   in: 25.3
-  out: 29.2
+  out: 27.25
   speed: 1.0
   crop_x: 0.5
   zoom: 1.0
   transition: cut
   sub: true
   captions:
-  - at: 2.6
-    dur: 1.4
+  - at: 1.1
+    dur: 1.0
     text: (안 죽음)
     style: pop
   sfx:
-  - at: 2.6
+  - at: 1.1
     name: pop
     vol: 0.4
 - src: work/input/albothyl2/20261113_230519.mp4
@@ -194,7 +195,7 @@ clips:
   captions:
   - at: 1.0
     dur: 1.4
-    text: 차가운 약 아님
+    text: (진심)
     style: pop
   sfx:
   - at: 1.0
@@ -206,7 +207,7 @@ clips:
   speed: 1.0
   crop_x: 0.5
   zoom: 1.0
-  transition: slideleft
+  transition: cut
   sub: true
   captions:
   - at: 1.1
@@ -220,6 +221,30 @@ clips:
   - at: 1.1
     name: pop
     vol: 0.5
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 131.4
+  out: 133.0
+  speed: 0.5
+  crop_x: 0.5
+  zoom: 1.35
+  transition: cut
+  sub: false
+  captions:
+  - at: 0.4
+    dur: 1.6
+    text: 어... 침
+    style: pop
+  - at: 2.0
+    dur: 1.2
+    text: (방송사고)
+    style: pop
+  sfx:
+  - at: 0.4
+    name: pop
+    vol: 0.4
+  - at: 2.0
+    name: pop
+    vol: 0.4
 - src: work/input/albothyl2/20261113_230519.mp4
   in: 136.5
   out: 139.7
