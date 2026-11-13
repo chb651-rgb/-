@@ -26,7 +26,7 @@ ScaledBorderAndShadow: yes
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Sub,{SUB_FONT},84,&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,0,0,0,0,100,100,0,0,1,7,2,2,70,70,560,1
 Style: Pop,{SUB_FONT},118,&H0000E1FF,&H0000E1FF,&H00000000,&H64000000,0,0,0,0,100,100,0,0,1,9,3,8,60,60,470,1
-Style: Top,{SUB_FONT},76,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,7,2,8,60,60,300,1
+Style: Top,{SUB_FONT},92,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,7,2,8,60,60,300,1
 Style: Title,{SUB_FONT},84,&H00111111,&H00111111,&H00FFFFFF,&H00FFFFFF,0,0,0,0,100,100,0,0,3,18,0,8,60,60,250,1
 
 [Events]
@@ -47,7 +47,7 @@ def _esc(text: str) -> str:
     return text.replace("\\", "").replace("{", "(").replace("}", ")").replace("\n", r"\N")
 
 
-def _chunks(words: list[dict], max_chars=13, max_dur=2.2, gap=0.45) -> list[dict]:
+def _chunks(words: list[dict], max_chars=13, max_dur=2.6, gap=0.8) -> list[dict]:
     """단어 타임스탬프 -> 짧은 자막 덩어리 (쇼츠는 한 줄에 짧게)."""
     out, cur = [], []
     for w in words:
@@ -57,7 +57,7 @@ def _chunks(words: list[dict], max_chars=13, max_dur=2.2, gap=0.45) -> list[dict
         if cur:
             joined = "".join(x["w"] for x in cur + [w]).strip()
             if (len(joined) > max_chars or w["start"] - cur[-1]["end"] > gap
-                    or w["end"] - cur[0]["start"] > max_dur):
+                    or (w["end"] - cur[0]["start"] > max_dur and len(joined) > 10)):
                 out.append(cur)
                 cur = []
         cur.append(w)
@@ -173,6 +173,7 @@ def render(edit_path: Path, out: Path | None = None, preview: bool = False) -> P
         for s in c.get("sfx") or []:
             sfx.append((starts[i] + float(s.get("at", 0)), s))
     stop_at = min([t for t, s in sfx if s.get("stop_bgm")], default=None)
+    pauses = [(t, t + float(s["pause_bgm"])) for t, s in sfx if s.get("pause_bgm")]
 
     nin = len(clips)
     bgm = edit.get("bgm")
@@ -185,7 +186,9 @@ def render(edit_path: Path, out: Path | None = None, preview: bool = False) -> P
         fade = 0.25 if stop_at is not None else 1.5   # 효과음 직전엔 '뚝' 끊기
         fl.append(f"[{b}:a]aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo,"
                   f"volume={vol},atrim=0:{end:.3f},afade=t=out:st={max(end - fade, 0):.3f}:d={fade},"
-                  f"apad,atrim=0:{total:.3f}[bgm]")
+                  f"apad,atrim=0:{total:.3f}"
+                  + "".join(f",volume=0:enable='between(t,{a:.2f},{b:.2f})'" for a, b in pauses)
+                  + "[bgm]")
         fl.append(f"{acur}asplit[av][sc]")
         fl.append("[bgm][sc]sidechaincompress=threshold=0.03:ratio=6:attack=30:release=500[bgd]")
         fl.append("[av][bgd]amix=inputs=2:duration=first:normalize=0[am]")
@@ -208,7 +211,7 @@ def render(edit_path: Path, out: Path | None = None, preview: bool = False) -> P
     cmd = ["ffmpeg", "-v", "error", "-stats", "-y", *inputs,
            "-filter_complex", ";\n".join(fl), "-map", "[vout]", "-map", "[aout]",
            "-c:v", "libx264", "-preset", "ultrafast" if preview else "medium",
-           "-crf", "28" if preview else "19", "-profile:v", "high", "-pix_fmt", "yuv420p",
+           "-crf", "28" if preview else "21", "-maxrate", "14M", "-bufsize", "28M", "-profile:v", "high", "-pix_fmt", "yuv420p",
            "-r", str(OUT_FPS), "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart",
            "-t", f"{total:.3f}", str(out)]
     (out.with_suffix(".filter.txt")).write_text(";\n".join(fl))

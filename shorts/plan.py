@@ -39,6 +39,7 @@ EDIT_HELP = """\
 #    sfx        효과음 [{at: 장면 시작 기준 초, name: 이름 또는 파일, vol: 0.8, stop_bgm: true}]
 #               name: sad_trombone(허무), suspense(긴장), sparkle(반짝), pop(뽁), whoosh(휙)
 #               stop_bgm: true 면 그 순간 배경음악이 뚝 끊김
+#               pause_bgm: 2.5 면 그 순간부터 2.5초 동안만 배경음악 멈춤
 # ───────────────────────────────────────────────────────────
 """
 
