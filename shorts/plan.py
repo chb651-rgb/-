@@ -22,6 +22,7 @@ EDIT_HELP = """\
 #  title      : 첫 2.5초 상단에 뜨는 제목 (없애려면 "")
 #  fit        : 가로 영상 처리  crop=꽉 채우게 자름 | blur=흐린 배경 위에 원본
 #  subtitles  : auto=음성 자동 자막 | off
+#  replace    : 잘못 인식된 자막 고치기 {틀린말: 맞는말}, 맞는말을 ""로 두면 그 자막 삭제
 #  bgm        : 배경음악 파일 경로 (말할 때 자동으로 작아짐), 없으면 null
 #  clips      : 순서대로 이어붙일 장면
 #    in/out     원본 영상의 시작/끝 초
@@ -89,7 +90,7 @@ def auto_plan(target: float = 30.0, name: str = "shorts", title: str = "",
             "note": f"점수 {c['score']:.2f} / {', '.join(c['why'])}" + (f' / "{c["text"]}"' if c["text"] else ""),
         })
 
-    plan = {"title": title, "fit": fit, "subtitles": "auto", "bgm": None, "bgm_volume": 0.25,
+    plan = {"title": title, "fit": fit, "subtitles": "auto", "replace": {}, "bgm": None, "bgm_volume": 0.25,
             "clips": clips}
     out = WORK / f"{name}.yaml"
     out.write_text(EDIT_HELP + yaml.safe_dump(plan, allow_unicode=True, sort_keys=False, width=200))

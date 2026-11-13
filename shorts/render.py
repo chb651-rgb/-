@@ -25,7 +25,7 @@ ScaledBorderAndShadow: yes
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Sub,{SUB_FONT},84,&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,0,0,0,0,100,100,0,0,1,7,2,2,70,70,560,1
-Style: Pop,{SUB_FONT},118,&H0000E1FF,&H0000E1FF,&H00000000,&H64000000,0,0,0,0,100,100,0,0,1,9,3,5,60,60,0,1
+Style: Pop,{SUB_FONT},118,&H0000E1FF,&H0000E1FF,&H00000000,&H64000000,0,0,0,0,100,100,0,0,1,9,3,8,60,60,470,1
 Style: Top,{SUB_FONT},76,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,7,2,8,60,60,300,1
 Style: Title,{SUB_FONT},84,&H00111111,&H00111111,&H00FFFFFF,&H00FFFFFF,0,0,0,0,100,100,0,0,3,18,0,8,60,60,250,1
 
@@ -202,6 +202,17 @@ def build_ass(edit, clips, starts, lens, trs, total) -> str:
         add("Title", 0.0, min(2.5, total), SUB_IN + _esc(edit["title"]), 2)
 
     auto = edit.get("subtitles", "auto") == "auto"
+    repl = edit.get("replace") or {}
+
+    def fix(text: str) -> str:
+        """잘못 인식된 자막 고치기. replace: {틀린말: 맞는말}, 빈 값이면 그 자막 삭제."""
+        t = text.strip()
+        for k, v in repl.items():
+            if k in t:
+                if not v:
+                    return ""
+                t = t.replace(k, str(v))
+        return t.rstrip(".")
     for i, c in enumerate(clips):
         s0 = starts[i]
         vis_end = s0 + lens[i] - (trs[i][1] / 2 if i < len(trs) else 0)
@@ -217,7 +228,9 @@ def build_ass(edit, clips, starts, lens, trs, total) -> str:
                 b = s0 + (ch["end"] - c["in"]) / sp + 0.15
                 if j + 1 < len(chunks):
                     b = min(b, s0 + (chunks[j + 1]["start"] - c["in"]) / sp)
-                add("Sub", max(a, s0), min(b, vis_end), SUB_IN + _esc(ch["text"]))
+                text = fix(ch["text"])
+                if text:
+                    add("Sub", max(a, s0), min(b, vis_end), SUB_IN + _esc(text))
         for cap in c.get("captions") or []:
             a = s0 + float(cap.get("at", 0))
             b = min(a + float(cap.get("dur", 1.5)), vis_end)

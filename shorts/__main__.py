@@ -25,6 +25,8 @@ def main() -> None:
     a = sub.add_parser("analyze"); a.add_argument("videos", nargs="*", type=Path)
     a.add_argument("--model", default="large-v3-turbo",
                    help="Whisper 모델 (빠르게: small)")
+    a.add_argument("--prompt", default="",
+                   help="음성 인식 힌트 단어 (예: '알보칠, 구내염, 면봉'). 주면 자막을 다시 인식")
 
     p = sub.add_parser("plan")
     p.add_argument("--target", type=float, default=30, help="목표 길이(초)")
@@ -53,7 +55,7 @@ def main() -> None:
         vids = args.videos or list_videos(INPUT)
         if not vids:
             raise SystemExit(f"{INPUT} 에 영상이 없어요.")
-        analyze(vids, args.model)
+        analyze(vids, args.model, args.prompt)
     elif args.cmd == "plan":
         from .plan import auto_plan
         auto_plan(args.target, args.name, args.title, args.fit)

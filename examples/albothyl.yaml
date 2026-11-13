@@ -1,0 +1,126 @@
+# ───────────────────────────────────────────────────────────
+#  쇼츠/릴스 편집 대본.  고친 뒤:  python -m shorts render <이 파일>
+#
+#  title      : 첫 2.5초 상단에 뜨는 제목 (없애려면 "")
+#  fit        : 가로 영상 처리  crop=꽉 채우게 자름 | blur=흐린 배경 위에 원본
+#  subtitles  : auto=음성 자동 자막 | off
+#  replace    : 잘못 인식된 자막 고치기 {틀린말: 맞는말}, 맞는말을 ""로 두면 그 자막 삭제
+#  bgm        : 배경음악 파일 경로 (말할 때 자동으로 작아짐), 없으면 null
+#  clips      : 순서대로 이어붙일 장면
+#    in/out     원본 영상의 시작/끝 초
+#    speed      0.5=슬로모션, 1.5=빨리감기
+#    crop_x     가로 영상을 자를 때 위치 (0 왼쪽 ~ 0.5 가운데 ~ 1 오른쪽)
+#    zoom       1.0=그대로, 1.2=살짝 확대(펀치인)
+#    transition 다음 장면으로 넘어가는 효과:
+#               cut, fade, slideleft, slideright, slideup, smoothleft, smoothup,
+#               zoomin, circleopen, wipeleft, radial, dissolve, pixelize
+#    captions   재미 자막. at=장면 시작 기준 초, dur=길이,
+#               style: pop(노란 큰 글씨, 강조) | sub(일반 자막) | top(상단 고정)
+#               (이모지는 폰트에 없어서 안 나와요)
+#    sub        이 장면에 음성 자동 자막 표시 여부
+# ───────────────────────────────────────────────────────────
+title: 구내염엔 알보칠
+fit: crop
+subtitles: auto
+replace:
+  소리 없는데: 솜이 없는데
+  소리 없다: 솜이 없다
+  소울 면봉이: 솜... 면봉이
+  으: ''
+  음: ''
+  어: ''
+  안녕하십니까: ''
+bgm: null
+bgm_volume: 0.25
+clips:
+- src: work/input/20261113_100332.mp4
+  in: 6.6
+  out: 10.4
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: cut
+  sub: true
+  captions:
+  - at: 2.6
+    dur: 1.2
+    text: 오늘의 처방
+    style: pop
+- src: work/input/20261113_100332.mp4
+  in: 18.2
+  out: 20.2
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.15
+  transition: slideleft
+  sub: true
+  captions:
+  - at: 1.1
+    dur: 0.9
+    text: (이미 겁먹음)
+    style: pop
+- src: work/input/20261113_100332.mp4
+  in: 27.8
+  out: 31.3
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: cut
+  sub: true
+  captions:
+  - at: 0.2
+    dur: 1.6
+    text: 소환 의식 중
+    style: pop
+- src: work/input/20261113_100332.mp4
+  in: 31.3
+  out: 35.6
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.2
+  transition: zoomin
+  sub: false
+  captions:
+  - at: 1.0
+    dur: 2.0
+    text: 손 떨리는 거 실화?
+    style: pop
+- src: work/input/20261113_100332.mp4
+  in: 40.2
+  out: 42.4
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: smoothup
+  sub: true
+  captions:
+  - at: 1.3
+    dur: 0.9
+    text: '...?'
+    style: pop
+- src: work/input/20261113_100332.mp4
+  in: 43.0
+  out: 60.5
+  speed: 4.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: cut
+  sub: false
+  captions:
+  - at: 0.2
+    dur: 4.0
+    text: 솜 찾는 중...
+    style: top
+- src: work/input/20261113_100332.mp4
+  in: 61.6
+  out: 68.2
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.1
+  transition: fade
+  sub: true
+  captions:
+  - at: 4.4
+    dur: 2.2
+    text: 결국 못 바름
+    style: pop

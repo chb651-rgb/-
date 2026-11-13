@@ -76,8 +76,8 @@ def audio_db(p: Probe, a: np.ndarray, hop: float = 0.25) -> np.ndarray:
 _MODEL = None
 
 
-def transcribe(p: Probe, audio: np.ndarray, model: str, out: Path) -> list[dict]:
-    if out.exists():
+def transcribe(p: Probe, audio: np.ndarray, model: str, out: Path, prompt: str = "") -> list[dict]:
+    if out.exists() and not prompt:
         return json.loads(out.read_text())
     if not len(audio):
         out.write_text("[]")
@@ -89,7 +89,8 @@ def transcribe(p: Probe, audio: np.ndarray, model: str, out: Path) -> list[dict]
         _MODEL = (model, WhisperModel(model, device="cpu", compute_type="int8"))
     segs, _ = _MODEL[1].transcribe(
         audio, language="ko", vad_filter=True, word_timestamps=True,
-        condition_on_previous_text=False, beam_size=5)
+        condition_on_previous_text=False, beam_size=5,
+        hotwords=prompt or None)
     res = []
     for s in segs:
         # 무음/잡음에서 생기는 환각 문장 제거
@@ -98,8 +99,25 @@ def transcribe(p: Probe, audio: np.ndarray, model: str, out: Path) -> list[dict]
         res.append({"start": round(s.start, 2), "end": round(s.end, 2), "text": s.text.strip(),
                     "words": [{"start": round(w.start, 2), "end": round(w.end, 2), "w": w.word}
                               for w in (s.words or [])]})
+    res = _resplit(res)
     out.write_text(json.dumps(res, ensure_ascii=False, indent=1))
     return res
+
+
+def _resplit(segs: list[dict], gap: float = 0.7) -> list[dict]:
+    """한 덩어리로 뭉친 문장을 단어 사이 공백(침묵) 기준으로 다시 나눈다."""
+    out = []
+    for seg in segs:
+        cur: list[dict] = []
+        for w in seg["words"]:
+            if cur and (w["start"] - cur[-1]["end"] > gap or cur[-1]["w"].strip().endswith((".", "?", "!", ","))):
+                out.append(cur); cur = []
+            cur.append(w)
+        if cur:
+            out.append(cur)
+    return [{"start": c[0]["start"], "end": c[-1]["end"],
+             "text": "".join(w["w"] for w in c).strip().rstrip(","),
+             "words": [{**w, "w": w["w"].rstrip(",")} for w in c]} for c in out]
 
 
 # ── 초 단위 특징 + 판정 ─────────────────────────────────────
@@ -226,7 +244,7 @@ def contact_sheet(p: Probe, out: Path, n: int = 30) -> None:
 
 
 # ── 엔트리 ──────────────────────────────────────────────────
-def analyze(videos: list[Path], model: str = "large-v3-turbo") -> list[dict]:
+def analyze(videos: list[Path], model: str = "large-v3-turbo", prompt: str = "") -> list[dict]:
     ANALYSIS.mkdir(parents=True, exist_ok=True)
     results = []
     for i, path in enumerate(videos, 1):
@@ -238,7 +256,7 @@ def analyze(videos: list[Path], model: str = "large-v3-turbo") -> list[dict]:
         vm = video_metrics(p)
         audio = load_audio(p)
         adb = audio_db(p, audio)
-        speech = transcribe(p, audio, model, d / "transcript.json")
+        speech = transcribe(p, audio, model, d / "transcript.json", prompt)
         rows = per_second(p, vm, adb, speech)
         res = {
             "file": str(path), "name": path.name, "duration": round(p.duration, 2),
