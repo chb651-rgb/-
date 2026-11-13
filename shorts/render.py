@@ -234,12 +234,15 @@ def build_ass(edit, clips, starts, lens, trs, total) -> str:
     repl = edit.get("replace") or {}
 
     def fix(text: str) -> str:
-        """잘못 인식된 자막 고치기. replace: {틀린말: 맞는말}, 빈 값이면 그 자막 삭제."""
+        """잘못 인식된 자막 고치기. replace: {틀린말: 맞는말}.
+        맞는말이 빈 값이면, 자막이 정확히 그 말(문장부호 제외)일 때만 삭제 (추임새 '으', '아' 등)."""
         t = text.strip()
+        bare = t.strip(" .,!?~")
         for k, v in repl.items():
-            if k in t:
-                if not v:
+            if not v:
+                if bare == k:
                     return ""
+            elif k in t:
                 t = t.replace(k, str(v))
         return t.rstrip(".")
     for i, c in enumerate(clips):

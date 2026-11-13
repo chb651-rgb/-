@@ -1,0 +1,240 @@
+# ───────────────────────────────────────────────────────────
+#  쇼츠/릴스 편집 대본.  고친 뒤:  python -m shorts render <이 파일>
+#
+#  title      : 첫 2.5초 상단에 뜨는 제목 (없애려면 "")
+#  fit        : 가로 영상 처리  crop=꽉 채우게 자름 | blur=흐린 배경 위에 원본
+#  subtitles  : auto=음성 자동 자막 | off
+#  replace    : 잘못 인식된 자막 고치기 {틀린말: 맞는말}, 맞는말을 ""로 두면 정확히 그 말인 자막만 삭제
+#  bgm        : 배경음악 파일 경로 (기본 제공: work/music/bgm_sneaky.wav) (말할 때 자동으로 작아짐), 없으면 null
+#  clips      : 순서대로 이어붙일 장면
+#    in/out     원본 영상의 시작/끝 초
+#    speed      0.5=슬로모션, 1.5=빨리감기
+#    crop_x     가로 영상을 자를 때 위치 (0 왼쪽 ~ 0.5 가운데 ~ 1 오른쪽)
+#    zoom       1.0=그대로, 1.2=살짝 확대(펀치인)
+#    transition 다음 장면으로 넘어가는 효과:
+#               cut, fade, slideleft, slideright, slideup, smoothleft, smoothup,
+#               zoomin, circleopen, wipeleft, radial, dissolve, pixelize
+#    captions   재미 자막. at=장면 시작 기준 초, dur=길이,
+#               style: pop(노란 큰 글씨, 강조) | sub(일반 자막) | top(상단 고정)
+#               (이모지는 폰트에 없어서 안 나와요)
+#    sub        이 장면에 음성 자동 자막 표시 여부
+#    sfx        효과음 [{at: 장면 시작 기준 초, name: 이름 또는 파일, vol: 0.8, stop_bgm: true}]
+#               name: sad_trombone(허무), suspense(긴장), sparkle(반짝), pop(뽁), whoosh(휙)
+#               stop_bgm: true 면 그 순간 배경음악이 뚝 끊김
+#               pause_bgm: 2.5 면 그 순간부터 2.5초 동안만 배경음악 멈춤
+# ───────────────────────────────────────────────────────────
+title: 알보칠 2탄
+fit: crop
+subtitles: auto
+replace:
+  으: ''
+  하아: ''
+  찹: ''
+  아: ''
+bgm: work/music/bgm_sneaky.wav
+bgm_volume: 0.22
+clips:
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 73.3
+  out: 75.9
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.1
+  transition: zoomin
+  sub: false
+  captions: []
+  sfx: []
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 9.9
+  out: 15.3
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: cut
+  sub: true
+  captions:
+  - at: 0.7
+    dur: 2.6
+    text: '지난 화: 면봉 없어서 실패'
+    style: top
+  - at: 4.0
+    dur: 1.4
+    text: 준비 완료
+    style: pop
+  sfx:
+  - at: 4.0
+    name: sparkle
+    vol: 0.6
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 18.7
+  out: 22.4
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: slideleft
+  sub: true
+  captions:
+  - at: 1.0
+    dur: 1.8
+    text: 상태 심각
+    style: pop
+  sfx:
+  - at: -0.2
+    name: whoosh
+    vol: 0.5
+  - at: 1.0
+    name: pop
+    vol: 0.4
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 25.3
+  out: 29.2
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: cut
+  sub: true
+  captions:
+  - at: 2.6
+    dur: 1.4
+    text: (안 죽음)
+    style: pop
+  sfx:
+  - at: 2.6
+    name: pop
+    vol: 0.4
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 47.3
+  out: 55.9
+  speed: 1.5
+  crop_x: 0.5
+  zoom: 1.0
+  transition: cut
+  sub: true
+  captions:
+  - at: 0.2
+    dur: 2.5
+    text: 조심조심...
+    style: top
+  - at: 3.9
+    dur: 1.6
+    text: 닿았다
+    style: pop
+  sfx:
+  - at: 3.6
+    name: suspense
+    vol: 0.7
+    pause_bgm: 6.5
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 55.9
+  out: 61.8
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: cut
+  sub: false
+  captions:
+  - at: 1.2
+    dur: 1.6
+    text: 효과 즉시 확인
+    style: pop
+  - at: 3.4
+    dur: 2.0
+    text: 영혼 가출
+    style: pop
+  sfx:
+  - at: 3.4
+    name: pop
+    vol: 0.4
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 69.6
+  out: 77.4
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: smoothup
+  sub: false
+  captions:
+  - at: 0.2
+    dur: 2.0
+    text: 근데 또 바름
+    style: top
+  - at: 4.8
+    dur: 2.4
+    text: 2차 비명
+    style: pop
+  sfx:
+  - at: -0.2
+    name: whoosh
+    vol: 0.4
+  - at: 4.8
+    name: pop
+    vol: 0.4
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 78.0
+  out: 84.8
+  speed: 2.5
+  crop_x: 0.5
+  zoom: 1.0
+  transition: cut
+  sub: false
+  captions:
+  - at: 0.1
+    dur: 2.6
+    text: 회복 중...
+    style: top
+  sfx: []
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 84.8
+  out: 87.2
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.1
+  transition: cut
+  sub: true
+  captions:
+  - at: 1.0
+    dur: 1.4
+    text: 차가운 약 아님
+    style: pop
+  sfx:
+  - at: 1.0
+    name: pop
+    vol: 0.4
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 101.4
+  out: 103.6
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: slideleft
+  sub: true
+  captions:
+  - at: 1.1
+    dur: 1.3
+    text: (거짓말)
+    style: pop
+  sfx:
+  - at: -0.2
+    name: whoosh
+    vol: 0.4
+  - at: 1.1
+    name: pop
+    vol: 0.5
+- src: work/input/albothyl2/20261113_230519.mp4
+  in: 136.5
+  out: 139.7
+  speed: 1.0
+  crop_x: 0.5
+  zoom: 1.0
+  transition: fade
+  sub: true
+  captions:
+  - at: 1.9
+    dur: 2.2
+    text: 구내염 퇴치 완료(?)
+    style: pop
+  sfx:
+  - at: 1.9
+    name: sad_trombone
+    vol: 0.5
+    stop_bgm: true
